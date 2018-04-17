@@ -1,80 +1,254 @@
 /*
- * geometry.c
+ * geometry_test.c
  * Andy Sayler
  * CSCI 3308
  * Summer 2014
  *
- * This file contains a simple geomtery functions.
+ * This file containsunit tests for geometry.c
+ *
+ * Requires http://check.sourceforge.net/
  *
  */
 
 #include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <errno.h>
+#include <check.h>
+/*
+ * geometry_test.c
+ * Andy Sayler
+ * CSCI 3308
+ * Summer 2014
+ *
+ * This file containsunit tests for geometry.c
+ *
+ * Requires http://check.sourceforge.net/
+ *
+ */
+
+#include <stdlib.h>
+#include <check.h>
 
 #include "geometry.h"
 
-#define FUZZY_EQ 0.01
+/* coord_2d_eq Test */
+START_TEST(test_2d_eq)
+{
+    coord_2d_t a;
+    coord_2d_t b;
 
-#define DEBUG(file, line, func, msg) fprintf(stderr, "DEBUG - %s_%d_%s: %s", file, line, func, msg);
+    a.x = b.x = 0;
+    a.y = b.y = 0;
+    ck_assert(coord_2d_eq(&a, &b));
 
-double coord_2d_dist(const coord_2d_t* a, const coord_2d_t* b){
+    a.x = b.x = 9.99;
+    a.y = b.y = 9.99;
+    ck_assert(coord_2d_eq(&a, &b));
 
-    /* Input Checks */
-    if(!a){
-        DEBUG(__FILE__, __LINE__, __func__, "'a' must not be NULL");
-        return NAN;
-    }
-    if(!b){
-        DEBUG(__FILE__, __LINE__, __func__, "'b' must not be NULL");
-        return NAN;
-    }
+    a.x = b.x = 3.33;
+    a.y = b.y = 9.99;
+    ck_assert(coord_2d_eq(&a, &b));
 
-    /* Maths */
-    return sqrt(pow((a->x - b->x), 2) + pow((a->y - b->y), 2));
+    a.x = 3.33;
+    a.y = 9.99;
+    b.x = 3.33;
+    b.y = 10.99;
+    ck_assert(!coord_2d_eq(&a, &b));
+
+    a.x = 3.33;
+    a.y = 9.99;
+    b.x = 2.33;
+    b.y = 9.99;
+    ck_assert(!coord_2d_eq(&a, &b));
+
+    a.x = 1.11;
+    a.y = 2.22;
+    b.x = 7.77;
+    b.y = 8.88;
+    ck_assert(!coord_2d_eq(&a, &b));
+
+}
+END_TEST
+
+/* coord_2d_dist Test */
+START_TEST(test_2d_dist)
+{
+    coord_2d_t a;
+    coord_2d_t b;
+
+    a.x = b.x = 0;
+    a.y = b.y = 0;
+    ck_assert(coord_2d_dist(&a, &b) == 0.0);
+
+    a.x = 0;
+    a.y = 0;
+    b.x = 3;
+    b.y = 0;
+    ck_assert(coord_2d_dist(&a, &b) == 3.0);
+
+    a.x = 0;
+    a.y = 0;
+    b.x = 0;
+    b.y = 3;
+    ck_assert(coord_2d_dist(&a, &b) == 3.0);
+
+    a.x = 0;
+    a.y = 0;
+    b.x = 3;
+    b.y = 4;
+    ck_assert(coord_2d_dist(&a, &b) == 5.0);
+
+    a.x = 1;
+    a.y = 2;
+    b.x = 4;
+    b.y = 6;
+    ck_assert(coord_2d_dist(&a, &b) == 5.0);
+
+}
+END_TEST
+
+/*coord_2d_area_triangle Test */
+START_TEST(test_2d_area_triangle)
+{
+    coord_2d_t a;
+    coord_2d_t b;
+    coord_2d_t c;
+    
+    a.x = 0;
+    a.y = 0;
+
+    b.x = 0;
+    b.y = 0;
+
+    c.x = 0;
+    c.y = 0;
+
+    ck_assert(coord_2d_area_triangle(&a, &b, &c) == 0.0);
+    
+
+}
+END_TEST
+
+/*coord_2d_area_triangle Test */
+START_TEST(test_2d_area_triangle_2)
+{
+    coord_2d_t a;
+    coord_2d_t b;
+    coord_2d_t c;
+    
+    a.x = 0;
+    a.y = 0;
+
+    b.x = 0;
+    b.y = 0;
+
+    c.x = 0;
+    c.y = 0;
+
+    ck_assert(coord_2d_area_triangle(&a, &b, &c) == 0.0);
+    
+
+}
+END_TEST
+
+
+/* coord_2d_midpoint Test */
+START_TEST(test_2d_midpoint)
+{
+    coord_2d_t a;
+    coord_2d_t b;
+    coord_2d_t mid;
+    coord_2d_t exp;
+
+    a.x = b.x = 0;
+    a.y = b.y = 0;
+    coord_2d_midpoint(&mid, &a, &b);
+    exp.x = 0;
+    exp.y = 0;
+    ck_assert(coord_2d_eq(&mid, &exp));
+
+    a.x = 0;
+    a.y = 0;
+    b.x = 3;
+    b.y = 0;
+    coord_2d_midpoint(&mid, &a, &b);
+    exp.x = 1.5;
+    exp.y = 0;
+    ck_assert(coord_2d_eq(&mid, &exp));
+
+    a.x = 0;
+    a.y = 0;
+    b.x = 0;
+    b.y = 3;
+    coord_2d_midpoint(&mid, &a, &b);
+    exp.x = 0;
+    exp.y = 1.5;
+    ck_assert(coord_2d_eq(&mid, &exp));
+
+    a.x = 0;
+    a.y = 0;
+    b.x = 3;
+    b.y = 3;
+    coord_2d_midpoint(&mid, &a, &b);
+    exp.x = 1.5;
+    exp.y = 1.5;
+    ck_assert(coord_2d_eq(&mid, &exp));
+
+    a.x = 1;
+    a.y = 2;
+    b.x = 3;
+    b.y = 4;
+    coord_2d_midpoint(&mid, &a, &b);
+    exp.x = 2;
+    exp.y = 3;
+    ck_assert(coord_2d_eq(&mid, &exp));
+
+}
+END_TEST
+
+/* coord_2d Test Suite */
+Suite* coord_2d_suite(void)
+{
+
+    /* Create Suite */
+    Suite* s = suite_create("coord_2d");
+
+    /* Setup Test Cases */
+    TCase* tc_2d_eq = tcase_create("coord_2d_eq");
+    tcase_add_test(tc_2d_eq, test_2d_eq);
+
+    TCase* tc_2d_dist = tcase_create("coord_2d_dist");
+    tcase_add_test(tc_2d_dist, test_2d_dist);
+
+    TCase* tc_2d_midpoint = tcase_create("coord_2d_midpoint");
+    tcase_add_test(tc_2d_midpoint, test_2d_midpoint);
+
+    TCase* tc_2d_area_triangle = tcase_create("coord_2d_area_triangle");
+    tcase_add_test(tc_2d_area_triangle, test_2d_area_triangle);
+
+    TCase* tc_2d_area_triangle_2 = tcase_create("coord_2d_area_triangle_2");
+    tcase_add_test(tc_2d_area_triangle_2, test_2d_area_triangle_2);
+
+    /* Add Cases to Suite */
+    suite_add_tcase(s, tc_2d_eq);
+    suite_add_tcase(s, tc_2d_dist);
+    suite_add_tcase(s, tc_2d_midpoint);
+    suite_add_tcase(s, tc_2d_area_triangle);
+    suite_add_tcase(s, tc_2d_area_triangle_2);
+
+    /* Return Suite */
+    return s;
 
 }
 
-bool coord_2d_eq(const coord_2d_t* a, const coord_2d_t* b){
+/* main: run test suites and set exit status */
+int main(void){
 
-    /* Equal if dist <= FUZZY_EQ */
-    if(coord_2d_dist(a, b) <= FUZZY_EQ){
-        return true;
-    }
-    else{
-        return false;
-    }
+    int failed = 0;
+    Suite* s = coord_2d_suite();
+    SRunner* sr = srunner_create(s);
+    srunner_run_all(sr, CK_VERBOSE);
+    failed = srunner_ntests_failed(sr);
+    srunner_free(sr);
 
-}
-
-void coord_2d_midpoint(coord_2d_t* mid, const coord_2d_t* a, const coord_2d_t* b){
-
-    /* Input Checks */
-    if(!mid){
-        DEBUG(__FILE__, __LINE__, __func__, "'mid' must not be NULL");
-        return;
-    }
-    if(!a){
-        DEBUG(__FILE__, __LINE__, __func__, "'a' must not be NULL");
-        return;
-    }
-    if(!b){
-        DEBUG(__FILE__, __LINE__, __func__, "'b' must not be NULL");
-        return;
-    }
-
-    /* Maths */
-    mid->x = ((a->x + b->x) / 2.0 );
-    mid->y = ((a->y + b->y) / 2.0 );
-
-}
-
-double coord_2d_area_triangle(const coord_2d_t* a, const coord_2d_t* b, const coord_2d_t* c){
-	double first_calc= (a->x * (b->y - c->y));
-	double second_calc= (b->x * (c->y - a->y));
-	double third_calc= (c->x * (a->y - b->y));
-	double fin_calc= ((first_calc + second_calc + third_calc)/2.0);
-	return fin_calc;
+    return (failed ? EXIT_FAILURE : EXIT_SUCCESS);
 
 }
